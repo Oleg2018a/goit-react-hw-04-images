@@ -47,7 +47,6 @@ export const App = () => {
 
          const totalPageMath =
          page < Math.ceil(itemsImg.totalHits / 12);
-         console.log(totalPageMath);
          setItems(prev => [...prev, ...itemsImg.hits])
          setTotalPage(totalPageMath)
       

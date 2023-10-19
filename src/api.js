@@ -32,6 +32,5 @@ export const imagesItems = async (galerryValue, page) => {
     },
   };
   const { data } = await axios(BASE_URL, option);
-
   return data;
 };

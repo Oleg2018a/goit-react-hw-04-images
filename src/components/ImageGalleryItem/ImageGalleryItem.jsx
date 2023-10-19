@@ -6,7 +6,7 @@ Modal.setAppElement('#root');
 
 
 
-export const ImageGalleryItem = ({ webformatURL, tags, largeImageURL }) => {
+export const ImageGalleryItem = ( {item:{webformatURL,tags,largeImageURL}} ) => {
   const [showModal, setShowModal] = useState(false);
 
   const handleOpenModal = () => {
@@ -16,11 +16,13 @@ export const ImageGalleryItem = ({ webformatURL, tags, largeImageURL }) => {
   const handleCloseModal = () => {
     setShowModal(false);
   };
-
   return (
     <>
       <div onClick={handleOpenModal}>
-        <GalleryImg src={webformatURL} alt={tags} />
+        <GalleryImg
+          src={webformatURL}
+          alt={tags}
+        />
       </div>
 
       <Modal
