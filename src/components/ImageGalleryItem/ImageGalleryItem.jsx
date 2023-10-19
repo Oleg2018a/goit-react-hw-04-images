@@ -1,43 +1,39 @@
-import React, { Component } from 'react'
+import React, { useState } from 'react'
 import {  GalleryImg,   ModalStyled, } from './ImageGalleryItem.styled';
 import Modal from 'react-modal';
 
 Modal.setAppElement('#root');
 
 
-export class ImageGalleryItem extends Component {
-  state = { showModal: false }
-  hendleOpenModal = () => {
-    this.setState({showModal: true})
-  }
-  hendleCloseModal = () => {
-        this.setState({ showModal: false });
-  }
-  
-  render() {
-   
-    const { webformatURL, tags, largeImageURL } = this.props.item;
-    return (
-      <>
-        <div onClick={this.hendleOpenModal}>
-          <GalleryImg src={webformatURL} alt={tags} />
-        </div>
 
-        <Modal
-          isOpen={this.state.showModal}
-          onRequestClose={this.hendleCloseModal}
-          style={ModalStyled}
-          contentLabel="Example Modal"
-        >
-        
-            <img src={largeImageURL} alt={tags} width="1150" height="650" />
-          
+export const ImageGalleryItem = ({ webformatURL, tags, largeImageURL }) => {
+  const [showModal, setShowModal] = useState(false);
 
-        </Modal>
-      </>
-    );
-     
-  }
-}
+  const handleOpenModal = () => {
+    setShowModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+  };
+
+  return (
+    <>
+      <div onClick={handleOpenModal}>
+        <GalleryImg src={webformatURL} alt={tags} />
+      </div>
+
+      <Modal
+        isOpen={showModal}
+        onRequestClose={handleCloseModal}
+        style={ModalStyled}
+        contentLabel="Example Modal"
+      >
+        <img src={largeImageURL} alt={tags} />
+      </Modal>
+    </>
+  );
+};
+
 
 export default ImageGalleryItem

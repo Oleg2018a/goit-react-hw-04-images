@@ -1,71 +1,73 @@
 import Searchbar from "components/Searchbar/Searchbar";
 import ImageGallery from "./ImageGallery/ImageGallery";
-import React, { Component } from 'react'
+import { useState } from 'react'
 import { imagesItems } from "api";
 import { LoadMore } from "./Button/Button.styled";
 import { RotatingLines } from 'react-loader-spinner';
+import { useEffect } from "react";
 
 
-export class App extends Component {
-  state = {
-    items: [],
-    galerryValue: '',
-    loading: false,
-    error: false,
-    page: 1,
-    totalPage: false
-  };
-
-  async componentDidUpdate(_, prevState) {
-    if (
-      this.state.page !== prevState.page ||
-      this.state.galerryValue !== prevState.galerryValue
-    ) {
-      try {
-        this.setState({ loading: true, error: false });
-        const itemsImg = await imagesItems(this.state.galerryValue,this.state.page);
-        if (itemsImg.totalHits < 1) {
-          throw new Error(
-            'Sorry, there are no images matching your search query. Please try again.'
-          );
-        }
-
-        const totalPageMath =
-          this.state.page < Math.ceil(itemsImg.totalHits / 12);
-        console.log(totalPageMath)
-        this.setState(prev => ({
-          items: [...prev.items, ...itemsImg.hits],
-          totalPage: totalPageMath,
-        }));
-      } catch (error) {
-        this.setState({ error: true });
-        console.error('erere');
-      } finally {
-        this.setState({ loading: false });
-      }
-    }
-  }
-  hendleSubmit = data => {
-    this.setState({
-      items: [],
-      page: 1,
-      totalPage: false,
-      loading: true,
-      error: false,
-      galerryValue: data,
-    });
+export const App = () => {
+  
+  const [items, setItems] = useState([])
+  const [galerryValue, setGalerryValue] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [error, setEror] = useState(false)
+  const [page, setPage] = useState(1)
+  const [totalPage , setTotalPage ] = useState(false)
+ 
+  const hendleSubmit = data => {
+    setItems([])
+    setPage(1)
+    setTotalPage(false)
+    setLoading(true)
+    setEror(false)
+    setGalerryValue(data)
 
   };
-  handleLoadMore = () => {
-    this.setState(prevState => ({
-      page: prevState.page + 1,
-    }));
+  const handleLoadMore = () => {
+      setPage( prev => prev + 1)
   };
-  render() {
-    const { items, loading, error, totalPage } = this.state;
+   
+   useEffect(() => {
+     if (!galerryValue){
+       return
+     }
+     async function getImages() {
+       try {
+         setLoading(true)
+         setEror(false)
+        
+         const itemsImg = await imagesItems(galerryValue,page);
+         if (itemsImg.totalHits < 1) {
+           throw new Error(
+             'Sorry, there are no images matching your search query. Please try again.'
+           );
+         }
+
+         const totalPageMath =
+         page < Math.ceil(itemsImg.totalHits / 12);
+         console.log(totalPageMath);
+         setItems(prev => [...prev, ...itemsImg.hits])
+         setTotalPage(totalPageMath)
+      
+       } catch (error) {
+         setEror(true)
+         console.error('erere');
+       } finally {
+        setLoading(false)
+       }
+     }
+
+    getImages()
+
+
+  },[galerryValue,page])
+
+
     return (
       <>
-        <Searchbar onSubmitForm={this.hendleSubmit} />
+        <Searchbar onSubmitForm={hendleSubmit} />
         {loading && (
           <RotatingLines
             strokeColor="grey"
@@ -80,11 +82,10 @@ export class App extends Component {
         <ImageGallery items={items} />
 
         {totalPage && (
-          <LoadMore onClick={this.handleLoadMore}>Load more</LoadMore>
+          <LoadMore onClick={handleLoadMore}>Load more</LoadMore>
         )}
       </>
     );
-  }
 }
 
 export default App
